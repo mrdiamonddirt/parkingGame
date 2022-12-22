@@ -8,9 +8,19 @@ loadSprite("wall", "sprites/wall.png");
 
 let wheelRotation = 0;
 let engineOn = true;
-let carAngle = 0;
+let currentCarRotation = 0;
 
 scene("game", () => {
+    const controls = add([
+        pos(0, 0),
+        rect(100, 100),
+        text("Controls", {
+            size: 32,
+            color: rgb(255, 255, 255),
+        }),
+        z(1),
+    ]);
+
     const wheel = add([
         pos(450, 80),
         scale(0.1),
@@ -24,17 +34,15 @@ scene("game", () => {
         pos(120, 80),
         area(),
         body({
-            friction: 0.1,
-            mass: 1,
-            shape: "square",
-            inertia: 0.1,
-            speed: 0,
+            maxVel: 0,
         }),
         solid(),
         scale(0.1),
-        rotate(carAngle),
+        rotate(currentCarRotation),
         origin("center"),
         sprite("car"),
+        carControls(),
+        // cameraFollow(),
         // components
         {
             dead: false,
@@ -51,15 +59,41 @@ scene("game", () => {
         }),
     ]);
 
+    function cameraFollow() {
+        return {
+            update() {
+                camPos(car.pos);
+            },
+        };
+    }
+
     onClick(() => {
         console.log("clicked");
     });
 
+    function carControls() {
+        return {
+            isDrive() {
+                // todo
+                return keyIsDown("up");
+            },
+            isReverse() {
+                // todo
+                return keyIsDown("down");
+            },
+            isMoving() {
+                // todo
+                return this.isDrive() || this.isReverse();
+            },
+        };
+    }
+
     onKeyDown("up", () => {
-        console.log("up");
+        // console.log("up");
         // add a force to the car
         if (engineOn) {
-            car.speed += 2;
+            const maxSpeed = 10;
+            car.speed = Math.min(car.speed + 2, maxSpeed);
             speedometer.text = car.speed;
         }
     });
@@ -67,10 +101,10 @@ scene("game", () => {
     onKeyDown("down", () => {
         console.log("down");
         // stop the car
-        if (car.speed > 0) {
-            car.speed -= 1;
-            speedometer.text = car.speed;
-        }
+        // if (car.speed > 0) {
+        //     car.speed -= 1;
+        //     speedometer.text = car.speed;
+        // }
     });
 
     onKeyDown("left", () => {
@@ -80,6 +114,9 @@ scene("game", () => {
         }
         console.log(wheelRotation);
         wheel.angle = wheelRotation;
+        // if (car.isMoving() && car.speed > 0) {
+        //     car.angle -= 1;
+        // }
     });
 
     onKeyDown("right", () => {
@@ -89,13 +126,50 @@ scene("game", () => {
         }
         console.log(wheelRotation);
         wheel.angle = wheelRotation;
+        // if (car.isMoving() && car.speed > 0) {
+        //     car.angle += 1;
+        // }
     });
+
+    function angleToVec2(angle) {
+        const vx = Math.cos(deg2rad(angle));
+        const vy = Math.sin(deg2rad(angle));
+        return vec2(vx, vy);
+    }
+
     onUpdate(() => {
-        currentCarRotation = carAngle;
-        if (car.speed > 0) {
-            car.speed -= 1;
+        // get car direction
+        // const carDirection = car.angle;
+
+        const forward = car.isDrive();
+        const backward = car.isReverse();
+        if (!forward && !backward) {
+            return;
+        }
+
+        const direction = forward ? 1 : -1;
+
+        // get wheel direction
+        const wheelDirection = wheel.rotate;
+
+        // calculate the angle between the car and the wheel
+        const vec = angleToVec2(car.angle);
+
+        if (engineOn && car.isMoving) {
             speedometer.text = car.speed;
-            car.pos.x += car.speed;
+
+            car.pos.x += vec.x * car.speed * direction;
+            car.pos.y += vec.y * car.speed * direction;
+        }
+        if (wheelRotation > 5) {
+            car.angle += 1;
+        } else if (wheelRotation > 15) {
+            car.angle += 2;
+        } else if (wheelRotation < -5) {
+            car.angle -= 1;
+        }
+        if (car.isReverse()) {
+            // todo reverse
         }
     });
 
