@@ -73,19 +73,21 @@ onKeyDown("down", () => {
 });
 
 onKeyDown("left", () => {
-    if (wheelRotation >= -45) {
+    if (wheelRotation >= -90) {
         console.log("left");
         wheelRotation -= 1;
     }
     console.log(wheelRotation);
+    wheel.angle = wheelRotation;
 });
 
 onKeyDown("right", () => {
-    if (wheelRotation <= 45) {
+    if (wheelRotation <= 90) {
         console.log("right");
         wheelRotation += 1;
     }
     console.log(wheelRotation);
+    wheel.angle = wheelRotation;
 });
 onUpdate(() => {
     currentCarRotation = carAngle;
