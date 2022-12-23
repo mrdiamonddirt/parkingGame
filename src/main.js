@@ -5,12 +5,15 @@ kaboom();
 loadSprite("car", "sprites/car.png");
 loadSprite("wheel", "sprites/wheel.png");
 loadSprite("wall", "sprites/wall.png");
+let bgImage = loadSprite("bg", "sprites/bg.png");
 
 let wheelRotation = 0;
 let engineOn = true;
 let currentCarRotation = 0;
 
 scene("game", () => {
+    layers(["bg", "obj", "ui"], "obj");
+
     const controls = add([
         pos(0, 0),
         rect(100, 100),
@@ -94,7 +97,7 @@ scene("game", () => {
         if (engineOn) {
             const maxSpeed = 10;
             car.speed = Math.min(car.speed + 2, maxSpeed);
-            speedometer.text = car.speed;
+            // speedometer.text = car.speed;
         }
     });
 
@@ -138,9 +141,8 @@ scene("game", () => {
     }
 
     onUpdate(() => {
-        // get car direction
-        // const carDirection = car.angle;
-
+        // update speedometer
+        speedometer.text = car.speed + " mph";
         const forward = car.isDrive();
         const backward = car.isReverse();
         if (!forward && !backward) {
@@ -156,8 +158,6 @@ scene("game", () => {
         const vec = angleToVec2(car.angle);
 
         if (engineOn && car.isMoving) {
-            speedometer.text = car.speed;
-
             car.pos.x += vec.x * car.speed * direction;
             car.pos.y += vec.y * car.speed * direction;
         }
@@ -175,20 +175,16 @@ scene("game", () => {
 
     addLevel(
         [
-            "==============================",
-            "=                            =",
-            "=                            =",
-            "=                            =",
-            "=                            =",
-            "=                            =",
-            "=                            =",
-            "=                            =",
-            "=                            =",
-            "=                            =",
-            "=                            =",
-            "=                            =",
-            "=                            =",
-            "==============================",
+            "====================",
+            "=                  =",
+            "=                  =",
+            "=                  =",
+            "=                  =",
+            "=                  =",
+            "=                  =",
+            "=                  =",
+            "=                  =",
+            "====================",
         ],
         {
             // define the size of each block
@@ -199,7 +195,15 @@ scene("game", () => {
             "^": () => [sprite("objective"), area(), pos(0, 0)],
             // C: () => [sprite("car"), area(), scale(0.1), pos(0, 0)],
             // "^": () => [sprite("enemy"), area(), "danger"],
-        }
+        },
+        add([
+            sprite("bg"),
+            layer("bg"),
+            scale(1),
+            pos(0, 0),
+            z(0),
+            origin("center"),
+        ])
     );
 });
 
