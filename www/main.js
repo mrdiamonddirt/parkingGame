@@ -2697,6 +2697,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprite("car", "sprites/car.png");
   loadSprite("wheel", "sprites/wheel.png");
   loadSprite("wall", "sprites/wall.png");
+  loadSound("lambostart", "./sounds/lambostart.ogg");
+  loadSound("car-horn", "./sounds/car-horn.wav");
   var bgImage = loadSprite("bg", "sprites/bg.png");
   var wheelRotation = 0;
   var engineOn = false;
@@ -2816,11 +2818,15 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       if (engineOn) {
         engineOn = false;
       } else {
-        engineOn = true;
+        play("lambostart");
+        setTimeout(() => {
+          engineOn = true;
+        }, 2e3);
       }
       console.log("engine on: " + engineOn);
     });
     onClick(() => {
+      play("car-horn");
       console.log("clicked");
     });
     function carControls() {
@@ -2837,7 +2843,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       };
     }
     onKeyDown("up", () => {
-      if (engineOn) {
+      if (!engineOn) {
+        return;
+      } else {
         const maxSpeed = 10;
         car.speed = Math.min(car.speed + 2, maxSpeed);
       }

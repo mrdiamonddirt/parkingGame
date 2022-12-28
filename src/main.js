@@ -7,9 +7,15 @@ kaboom({
     debug: true,
 });
 
+// load sprites
 loadSprite("car", "sprites/car.png");
 loadSprite("wheel", "sprites/wheel.png");
 loadSprite("wall", "sprites/wall.png");
+
+//  load sounds
+loadSound("lambostart", "./sounds/lambostart.ogg");
+loadSound("car-horn", "./sounds/car-horn.wav");
+
 let bgImage = loadSprite("bg", "sprites/bg.png");
 
 let wheelRotation = 0;
@@ -117,12 +123,16 @@ scene("game", () => {
         if (engineOn) {
             engineOn = false;
         } else {
-            engineOn = true;
+            play("lambostart");
+            setTimeout(() => {
+                engineOn = true;
+            }, 2000);
         }
         console.log("engine on: " + engineOn);
     });
 
     onClick(() => {
+        play("car-horn");
         console.log("clicked");
     });
 
@@ -148,7 +158,9 @@ scene("game", () => {
         // console.log("up");
         // add a force to the car
         // accelerate the car
-        if (engineOn) {
+        if (!engineOn) {
+            return;
+        } else {
             const maxSpeed = 10;
             car.speed = Math.min(car.speed + 2, maxSpeed);
         }
