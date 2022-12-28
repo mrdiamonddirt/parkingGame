@@ -13,8 +13,8 @@ loadSprite("wall", "sprites/wall.png");
 let bgImage = loadSprite("bg", "sprites/bg.png");
 
 let wheelRotation = 0;
-let engineOn = true;
-let currentCarRotation = 0;
+let engineOn = false;
+let currentCarRotation = 90;
 let controlsShowing = true;
 
 scene("game", () => {
@@ -27,13 +27,20 @@ scene("game", () => {
         rect(400, 500),
         color(255, 255, 255),
         text(
-            "Controls \n Up: Accelerate \n Down: Reverse \n Left And Right: Steer \n Enter: Turn Engine On/Off \n (Currently: Not Implemented) \n Click: Honk Horn \n (Currently: Not Implemented) \n / to hide controls",
+            `Controls \n Up: Accelerate \n Down: Reverse \n Left And Right: Steer \n Enter: Turn Engine ${engineOn} \n Click: Honk Horn \n (Currently: Not Implemented) \n / to hide controls`,
             {
                 size: 22,
                 color: rgb(255, 255, 255),
             }
         ),
         z(1),
+        onUpdate(() => {
+            if (engineOn) {
+                controls.text = `Controls \n Up: Accelerate \n Down: Reverse \n Left And Right: Steer \n Enter: Turn Engine ${engineOn} \n Click: Honk Horn \n (Currently: Not Implemented) \n / to hide controls`;
+            } else {
+                controls.text = `Controls \n Up: Accelerate \n Down: Reverse \n Left And Right: Steer \n Enter: Turn Engine ${engineOn} \n Click: Honk Horn \n (Currently: Not Implemented) \n / to hide controls`;
+            }
+        }),
     ]);
 
     function toggleControls() {
@@ -60,7 +67,7 @@ scene("game", () => {
     ]);
 
     const car = add([
-        pos(120, 80),
+        pos(1020, 720),
         area(),
         body({
             maxVel: 0,
@@ -88,6 +95,9 @@ scene("game", () => {
             size: 32,
             color: rgb(255, 255, 255),
         }),
+        onUpdate(() => {
+            speedometer.text = car.speed + " mph";
+        }),
     ]);
 
     function cameraFollow() {
@@ -103,6 +113,15 @@ scene("game", () => {
         console.log("controls hidden");
     });
 
+    onKeyPress("enter", () => {
+        if (engineOn) {
+            engineOn = false;
+        } else {
+            engineOn = true;
+        }
+        console.log("engine on: " + engineOn);
+    });
+
     onClick(() => {
         console.log("clicked");
     });
@@ -116,7 +135,6 @@ scene("game", () => {
             isReverse() {
                 // todo
                 // swap steering direction to be mirrored
-
                 return keyIsDown("down");
             },
             isMoving() {
@@ -131,7 +149,7 @@ scene("game", () => {
         // add a force to the car
         // accelerate the car
         if (engineOn) {
-            const maxSpeed = 30;
+            const maxSpeed = 10;
             car.speed = Math.min(car.speed + 2, maxSpeed);
         }
     });
@@ -146,6 +164,9 @@ scene("game", () => {
     });
 
     onKeyDown("left", () => {
+        if (!engineOn) {
+            return;
+        }
         if (wheelRotation >= -540) {
             console.log("left");
             wheelRotation -= 5;
@@ -158,6 +179,9 @@ scene("game", () => {
     });
 
     onKeyDown("right", () => {
+        if (!engineOn) {
+            return;
+        }
         if (wheelRotation <= 540) {
             console.log("right");
             wheelRotation += 5;
@@ -176,12 +200,11 @@ scene("game", () => {
     }
 
     onUpdate(() => {
-        // update speedometer
-        speedometer.text = car.speed + " mph";
-
         const forward = car.isDrive();
         const backward = car.isReverse();
         if (!forward && !backward) {
+            // console.log("not moving", car.speed);
+            // if the car is not moving, stop the car
             return;
         }
 
