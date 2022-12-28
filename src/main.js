@@ -1,6 +1,11 @@
 import kaboom from "kaboom";
 
-kaboom();
+kaboom({
+    global: true,
+    fullscreen: true,
+    scale: 1,
+    debug: true,
+});
 
 loadSprite("car", "sprites/car.png");
 loadSprite("wheel", "sprites/wheel.png");
@@ -16,6 +21,8 @@ scene("game", () => {
 
     const controls = add([
         pos(0, 0),
+        layer("ui"),
+        fixed(),
         rect(100, 100),
         text("Controls", {
             size: 32,
@@ -26,10 +33,12 @@ scene("game", () => {
 
     const wheel = add([
         pos(450, 80),
+        fixed(),
         scale(0.1),
         rotate(wheelRotation),
         origin("center"),
         sprite("wheel"),
+        layer("ui"),
         z(1),
     ]);
 
@@ -45,7 +54,7 @@ scene("game", () => {
         origin("center"),
         sprite("car"),
         carControls(),
-        // cameraFollow(),
+        cameraFollow(),
         // components
         {
             dead: false,
@@ -54,7 +63,9 @@ scene("game", () => {
     ]);
 
     const speedometer = add([
-        pos(850, 80),
+        pos(800, 80),
+        layer("ui"),
+        fixed(),
         origin("center"),
         text(car.speed + " mph", {
             size: 32,
@@ -82,6 +93,8 @@ scene("game", () => {
             },
             isReverse() {
                 // todo
+                // swap steering direction to be mirrored
+
                 return keyIsDown("down");
             },
             isMoving() {
@@ -94,8 +107,9 @@ scene("game", () => {
     onKeyDown("up", () => {
         // console.log("up");
         // add a force to the car
+        // accelerate the car
         if (engineOn) {
-            const maxSpeed = 10;
+            const maxSpeed = 30;
             car.speed = Math.min(car.speed + 2, maxSpeed);
             // speedometer.text = car.speed;
         }
@@ -111,9 +125,9 @@ scene("game", () => {
     });
 
     onKeyDown("left", () => {
-        if (wheelRotation >= -90) {
+        if (wheelRotation >= -540) {
             console.log("left");
-            wheelRotation -= 1;
+            wheelRotation -= 5;
         }
         console.log(wheelRotation);
         wheel.angle = wheelRotation;
@@ -123,9 +137,9 @@ scene("game", () => {
     });
 
     onKeyDown("right", () => {
-        if (wheelRotation <= 90) {
+        if (wheelRotation <= 540) {
             console.log("right");
-            wheelRotation += 1;
+            wheelRotation += 5;
         }
         console.log(wheelRotation);
         wheel.angle = wheelRotation;
@@ -143,9 +157,14 @@ scene("game", () => {
     onUpdate(() => {
         // update speedometer
         speedometer.text = car.speed + " mph";
+
         const forward = car.isDrive();
         const backward = car.isReverse();
         if (!forward && !backward) {
+            // decelerate stops car from being reversed
+            // if (car.speed > 0) {
+            //     car.speed -= 1;
+            // }
             return;
         }
 
@@ -161,30 +180,46 @@ scene("game", () => {
             car.pos.x += vec.x * car.speed * direction;
             car.pos.y += vec.y * car.speed * direction;
         }
-        if (wheelRotation > 5) {
-            car.angle += 1;
-        } else if (wheelRotation > 15) {
-            car.angle += 2;
-        } else if (wheelRotation < -5) {
-            car.angle -= 1;
+        if (Math.abs(wheelRotation) > 2) {
+            // Turn the car based on the wheel's rotation if it is more than 2 degrees
+            car.angle += wheelRotation * 0.007;
+        } else if (Math.abs(wheelRotation) < 2) {
+            car.angle -= wheelRotation * 0.007;
         }
         if (car.isReverse()) {
             // todo reverse
         }
+        console.log("car angle", car.angle);
+        console.log("wheel angle", wheel.angle);
     });
 
     addLevel(
         [
-            "====================",
-            "=                  =",
-            "=                  =",
-            "=                  =",
-            "=                  =",
-            "=                  =",
-            "=                  =",
-            "=                  =",
-            "=                  =",
-            "====================",
+            "========================================================================================================================================================================================================",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "=                                                                                                                                                                                                      =",
+            "========================================================================================================================================================================================================",
         ],
         {
             // define the size of each block
