@@ -2701,19 +2701,37 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var wheelRotation = 0;
   var engineOn = true;
   var currentCarRotation = 0;
+  var controlsShowing = true;
   scene("game", () => {
     layers(["bg", "obj", "ui"], "obj");
     const controls = add([
       pos(0, 0),
       layer("ui"),
       fixed(),
-      rect(100, 100),
-      text("Controls", {
-        size: 32,
-        color: rgb(255, 255, 255)
-      }),
+      rect(400, 500),
+      color(255, 255, 255),
+      text(
+        "Controls \n Up: Accelerate \n Down: Reverse \n Left And Right: Steer \n Enter: Turn Engine On/Off \n (Currently: Not Implemented) \n Click: Honk Horn \n (Currently: Not Implemented) \n / to hide controls",
+        {
+          size: 22,
+          color: rgb(255, 255, 255)
+        }
+      ),
       z(1)
     ]);
+    function toggleControls() {
+      if (controlsShowing) {
+        controlsShowing = false;
+        controls.hidden = true;
+        setTimeout(() => {
+        }, 1e3);
+      } else {
+        controlsShowing = true;
+        controls.hidden = false;
+        setTimeout(() => {
+        }, 1e3);
+      }
+    }
     const wheel = add([
       pos(450, 80),
       fixed(),
@@ -2759,6 +2777,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         }
       };
     }
+    onKeyPress("/", () => {
+      toggleControls();
+      console.log("controls hidden");
+    });
     onClick(() => {
       console.log("clicked");
     });
