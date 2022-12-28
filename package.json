@@ -1,15 +1,17 @@
 {
-	"name": "parkingGame",
-	"homepage": "https://mrdiamonddirt.github.io/parkingGame/",
-	"scripts": {
-		"build": "esbuild --bundle src/main.js --outfile=www/main.js",
-		"dev": "esbuild --bundle src/main.js --outfile=www/main.js --servedir=www",
-		"zip": "npm run build && mkdir -p dist && zip -r dist/game.zip www -x \"**/.DS_Store\""
-	},
-	"dependencies": {
-		"kaboom": "^2000.2.10"
-	},
-	"devDependencies": {
-		"esbuild": "^0.16.10"
-	}
+    "name": "parkingGame",
+    "homepage": "https://mrdiamonddirt.github.io/parkingGame/",
+    "scripts": {
+        "build": "esbuild --bundle src/main.js --outfile=www/main.js",
+        "dev": "esbuild --bundle src/main.js --outfile=www/main.js --servedir=www",
+        "zip": "npm run build && mkdir -p dist && zip -r dist/game.zip www -x \"**/.DS_Store\"",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d build"
+    },
+    "dependencies": {
+        "kaboom": "^2000.2.10"
+    },
+    "devDependencies": {
+        "esbuild": "^0.16.10"
+    }
 }
