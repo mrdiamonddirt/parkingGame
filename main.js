@@ -2699,8 +2699,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprite("wall", "sprites/wall.png");
   var bgImage = loadSprite("bg", "sprites/bg.png");
   var wheelRotation = 0;
-  var engineOn = true;
-  var currentCarRotation = 0;
+  var engineOn = false;
+  var currentCarRotation = 90;
   var controlsShowing = true;
   scene("game", () => {
     layers(["bg", "obj", "ui"], "obj");
@@ -2711,13 +2711,41 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       rect(400, 500),
       color(255, 255, 255),
       text(
-        "Controls \n Up: Accelerate \n Down: Reverse \n Left And Right: Steer \n Enter: Turn Engine On/Off \n (Currently: Not Implemented) \n Click: Honk Horn \n (Currently: Not Implemented) \n / to hide controls",
+        `Controls 
+ Up: Accelerate 
+ Down: Reverse 
+ Left And Right: Steer 
+ Enter: Turn Engine ${engineOn} 
+ Click: Honk Horn 
+ (Currently: Not Implemented) 
+ / to hide controls`,
         {
           size: 22,
           color: rgb(255, 255, 255)
         }
       ),
-      z(1)
+      z(1),
+      onUpdate(() => {
+        if (engineOn) {
+          controls.text = `Controls 
+ Up: Accelerate 
+ Down: Reverse 
+ Left And Right: Steer 
+ Enter: Turn Engine ${engineOn} 
+ Click: Honk Horn 
+ (Currently: Not Implemented) 
+ / to hide controls`;
+        } else {
+          controls.text = `Controls 
+ Up: Accelerate 
+ Down: Reverse 
+ Left And Right: Steer 
+ Enter: Turn Engine ${engineOn} 
+ Click: Honk Horn 
+ (Currently: Not Implemented) 
+ / to hide controls`;
+        }
+      })
     ]);
     function toggleControls() {
       if (controlsShowing) {
@@ -2733,8 +2761,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
     }
     const wheel = add([
-      pos(450, 80),
       fixed(),
+      pos(580, 80),
       scale(0.1),
       rotate(wheelRotation),
       origin("center"),
@@ -2743,7 +2771,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       z(1)
     ]);
     const car = add([
-      pos(120, 80),
+      pos(1020, 720),
       area(),
       body({
         maxVel: 0
@@ -2768,6 +2796,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       text(car.speed + " mph", {
         size: 32,
         color: rgb(255, 255, 255)
+      }),
+      onUpdate(() => {
+        speedometer.text = car.speed + " mph";
       })
     ]);
     function cameraFollow() {
@@ -2780,6 +2811,14 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     onKeyPress("/", () => {
       toggleControls();
       console.log("controls hidden");
+    });
+    onKeyPress("enter", () => {
+      if (engineOn) {
+        engineOn = false;
+      } else {
+        engineOn = true;
+      }
+      console.log("engine on: " + engineOn);
     });
     onClick(() => {
       console.log("clicked");
@@ -2799,7 +2838,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     onKeyDown("up", () => {
       if (engineOn) {
-        const maxSpeed = 30;
+        const maxSpeed = 10;
         car.speed = Math.min(car.speed + 2, maxSpeed);
       }
     });
@@ -2807,6 +2846,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       console.log("down");
     });
     onKeyDown("left", () => {
+      if (!engineOn) {
+        return;
+      }
       if (wheelRotation >= -540) {
         console.log("left");
         wheelRotation -= 5;
@@ -2815,6 +2857,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       wheel.angle = wheelRotation;
     });
     onKeyDown("right", () => {
+      if (!engineOn) {
+        return;
+      }
       if (wheelRotation <= 540) {
         console.log("right");
         wheelRotation += 5;
@@ -2828,7 +2873,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       return vec2(vx, vy);
     }
     onUpdate(() => {
-      speedometer.text = car.speed + " mph";
       const forward = car.isDrive();
       const backward = car.isReverse();
       if (!forward && !backward) {
@@ -2853,31 +2897,49 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     });
     addLevel(
       [
-        "========================================================================================================================================================================================================",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "=                                                                                                                                                                                                      =",
-        "========================================================================================================================================================================================================"
+        "=================================================================",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "=                                                               =",
+        "================================================================="
       ],
       {
         width: 50,
@@ -2888,10 +2950,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       add([
         sprite("bg"),
         layer("bg"),
-        scale(1),
+        scale(2),
         pos(0, 0),
         z(0),
-        origin("center")
+        origin("topleft")
       ])
     );
   });
