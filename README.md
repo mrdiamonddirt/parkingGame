@@ -23,10 +23,11 @@ If you like the game, please consider supporting me on
 -   [x] Engine sound when starting the car
 -   [x] Horn sound when click the mouse
 -   [x] Controls List
+-   [x] Objective Marker
+-   [x] Prompt to start the engine if the car is not started
 
 ## planned features
 
--   [ ] Targets to park the car
 -   [ ] Speedometer
 -   [ ] mirror the direction of the steering when reversing
 -   [ ] Engine sound when moving the car
