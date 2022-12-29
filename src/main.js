@@ -20,9 +20,10 @@ loadSound("car-horn", "./sounds/car-horn.wav");
 let bgImage = loadSprite("bg", "sprites/bg.png");
 
 let wheelRotation = 0;
-let engineOn = true;
+let engineOn = false;
 let currentCarRotation = 90;
 let controlsShowing = true;
+let engineStartShowing = false;
 
 scene("game", () => {
     layers(["bg", "obj", "ui"], "obj");
@@ -72,6 +73,17 @@ scene("game", () => {
         }
     }
 
+    function ShowEngineStart() {
+        if (!engineStartShowing) {
+            engineStartShowing = true;
+            startEngine.hidden = false;
+            setTimeout(() => {
+                engineStartShowing = false;
+                startEngine.hidden = true;
+            }, 2000);
+        }
+    }
+
     const wheel = add([
         fixed(),
         pos(580, 80),
@@ -117,6 +129,20 @@ scene("game", () => {
         onUpdate(() => {
             speedometer.text = car.speed + " mph";
         }),
+    ]);
+
+    const startEngine = add([
+        pos(car.pos.x - 400, car.pos.y - 200),
+        layer("ui"),
+        fixed(),
+        origin("center"),
+        text("Press Enter To Start Engine", {
+            size: 32,
+            color: rgb(255, 255, 255),
+        }),
+        // rect(400, 100),
+        // color(255, 255, 255),
+        // z(3),
     ]);
 
     function cameraFollow() {
@@ -172,6 +198,9 @@ scene("game", () => {
         // add a force to the car
         // accelerate the car
         if (!engineOn) {
+            ShowEngineStart();
+            console.log("engine not on");
+
             return;
         } else {
             const maxSpeed = 10;
@@ -225,6 +254,10 @@ scene("game", () => {
     }
 
     onUpdate(() => {
+        if (!engineStartShowing) {
+            startEngine.hidden = true;
+        }
+
         const forward = car.isDrive();
         const backward = car.isReverse();
         if (!forward && !backward) {

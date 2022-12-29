@@ -2702,9 +2702,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSound("car-horn", "./sounds/car-horn.wav");
   var bgImage = loadSprite("bg", "sprites/bg.png");
   var wheelRotation = 0;
-  var engineOn = true;
+  var engineOn = false;
   var currentCarRotation = 90;
   var controlsShowing = true;
+  var engineStartShowing = false;
   scene("game", () => {
     layers(["bg", "obj", "ui"], "obj");
     const objective = add([
@@ -2772,6 +2773,16 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         }, 1e3);
       }
     }
+    function ShowEngineStart() {
+      if (!engineStartShowing) {
+        engineStartShowing = true;
+        startEngine.hidden = false;
+        setTimeout(() => {
+          engineStartShowing = false;
+          startEngine.hidden = true;
+        }, 2e3);
+      }
+    }
     const wheel = add([
       fixed(),
       pos(580, 80),
@@ -2815,6 +2826,16 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         speedometer.text = car.speed + " mph";
       })
     ]);
+    const startEngine = add([
+      pos(car.pos.x - 400, car.pos.y - 200),
+      layer("ui"),
+      fixed(),
+      origin("center"),
+      text("Press Enter To Start Engine", {
+        size: 32,
+        color: rgb(255, 255, 255)
+      })
+    ]);
     function cameraFollow() {
       return {
         update() {
@@ -2856,6 +2877,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     onKeyDown("up", () => {
       if (!engineOn) {
+        ShowEngineStart();
+        console.log("engine not on");
         return;
       } else {
         const maxSpeed = 10;
@@ -2893,6 +2916,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       return vec2(vx, vy);
     }
     onUpdate(() => {
+      if (!engineStartShowing) {
+        startEngine.hidden = true;
+      }
       const forward = car.isDrive();
       const backward = car.isReverse();
       if (!forward && !backward) {
