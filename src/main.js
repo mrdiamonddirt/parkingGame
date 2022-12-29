@@ -11,6 +11,7 @@ kaboom({
 loadSprite("car", "sprites/car.png");
 loadSprite("wheel", "sprites/wheel.png");
 loadSprite("wall", "sprites/wall.png");
+loadSprite("objective", "sprites/objective.png");
 
 //  load sounds
 loadSound("lambostart", "./sounds/lambostart.ogg");
@@ -19,12 +20,22 @@ loadSound("car-horn", "./sounds/car-horn.wav");
 let bgImage = loadSprite("bg", "sprites/bg.png");
 
 let wheelRotation = 0;
-let engineOn = false;
+let engineOn = true;
 let currentCarRotation = 90;
 let controlsShowing = true;
 
 scene("game", () => {
     layers(["bg", "obj", "ui"], "obj");
+
+    const objective = add([
+        pos(1180, 810),
+        rotate(13),
+        scale(0.4),
+        sprite("objective"),
+        area(),
+        layer("obj"),
+        z(1),
+    ]);
 
     const controls = add([
         pos(0, 0),
@@ -74,7 +85,7 @@ scene("game", () => {
 
     const car = add([
         pos(1020, 720),
-        area(),
+        area(100, 100),
         body({
             maxVel: 0,
         }),
@@ -83,8 +94,10 @@ scene("game", () => {
         rotate(currentCarRotation),
         origin("center"),
         sprite("car"),
+        layer("obj"),
         carControls(),
         cameraFollow(),
+        z(1),
         // components
         {
             dead: false,
@@ -144,7 +157,7 @@ scene("game", () => {
             },
             isReverse() {
                 // todo
-                // swap steering direction to be mirrored
+                // swap steering direction to be mirrored/
                 return keyIsDown("down");
             },
             isMoving() {
@@ -241,8 +254,8 @@ scene("game", () => {
         if (car.isReverse()) {
             // todo reverse
         }
-        console.log("car angle", car.angle);
-        console.log("wheel angle", wheel.angle);
+        // console.log("car angle", car.angle);
+        // console.log("wheel angle", wheel.angle);
     });
 
     addLevel(
@@ -297,7 +310,6 @@ scene("game", () => {
             height: 50,
             // define what each symbol means, by a function returning a component list (what will be passed to add())
             "=": () => [sprite("wall"), area(), scale(0.1), solid()],
-            "^": () => [sprite("objective"), area(), pos(0, 0)],
             // C: () => [sprite("car"), area(), scale(0.1), pos(0, 0)],
             // "^": () => [sprite("enemy"), area(), "danger"],
         },

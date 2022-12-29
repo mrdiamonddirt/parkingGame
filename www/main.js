@@ -2697,15 +2697,25 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprite("car", "sprites/car.png");
   loadSprite("wheel", "sprites/wheel.png");
   loadSprite("wall", "sprites/wall.png");
+  loadSprite("objective", "sprites/objective.png");
   loadSound("lambostart", "./sounds/lambostart.ogg");
   loadSound("car-horn", "./sounds/car-horn.wav");
   var bgImage = loadSprite("bg", "sprites/bg.png");
   var wheelRotation = 0;
-  var engineOn = false;
+  var engineOn = true;
   var currentCarRotation = 90;
   var controlsShowing = true;
   scene("game", () => {
     layers(["bg", "obj", "ui"], "obj");
+    const objective = add([
+      pos(1180, 810),
+      rotate(13),
+      scale(0.4),
+      sprite("objective"),
+      area(),
+      layer("obj"),
+      z(1)
+    ]);
     const controls = add([
       pos(0, 0),
       layer("ui"),
@@ -2774,7 +2784,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     ]);
     const car = add([
       pos(1020, 720),
-      area(),
+      area(100, 100),
       body({
         maxVel: 0
       }),
@@ -2783,8 +2793,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       rotate(currentCarRotation),
       origin("center"),
       sprite("car"),
+      layer("obj"),
       carControls(),
       cameraFollow(),
+      z(1),
       {
         dead: false,
         speed: 0
@@ -2900,8 +2912,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
       if (car.isReverse()) {
       }
-      console.log("car angle", car.angle);
-      console.log("wheel angle", wheel.angle);
     });
     addLevel(
       [
@@ -2952,8 +2962,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       {
         width: 50,
         height: 50,
-        "=": () => [sprite("wall"), area(), scale(0.1), solid()],
-        "^": () => [sprite("objective"), area(), pos(0, 0)]
+        "=": () => [sprite("wall"), area(), scale(0.1), solid()]
       },
       add([
         sprite("bg"),
