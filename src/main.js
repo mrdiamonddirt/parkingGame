@@ -14,8 +14,9 @@ loadSprite("wall", "sprites/wall.png");
 loadSprite("objective", "sprites/objective.png");
 
 //  load sounds
-loadSound("lambostart", "./sounds/lambostart.ogg");
+loadSound("LamboStart", "./sounds/LamboSVStart.ogg");
 loadSound("car-horn", "./sounds/car-horn.wav");
+loadSound("LamboRun", "./sounds/RunLoopLambo.wav");
 
 let bgImage = loadSprite("bg", "sprites/bg.png");
 
@@ -24,12 +25,18 @@ let engineOn = false;
 let currentCarRotation = 90;
 let controlsShowing = true;
 let engineStartShowing = false;
+let ParkingSpot = {
+    spot1: {
+        x: 1180,
+        y: 810,
+    },
+};
 
 scene("game", () => {
     layers(["bg", "obj", "ui"], "obj");
 
     const objective = add([
-        pos(1180, 810),
+        pos(ParkingSpot.spot1.x, ParkingSpot.spot1.y),
         rotate(13),
         scale(0.4),
         sprite("objective"),
@@ -45,7 +52,7 @@ scene("game", () => {
         rect(400, 500),
         color(255, 255, 255),
         text(
-            `Controls \n Up: Accelerate \n Down: Reverse \n Left And Right: Steer \n Enter: Turn Engine ${engineOn} \n Click: Honk Horn \n (Currently: Not Implemented) \n / to hide controls`,
+            `Controls \n Up: Accelerate \n Down: Reverse \n Left And Right: Steer \n Enter: Turn Engine ${engineOn} \n Click: Honk Horn \n / to hide controls`,
             {
                 size: 22,
                 color: rgb(255, 255, 255),
@@ -54,9 +61,9 @@ scene("game", () => {
         z(1),
         onUpdate(() => {
             if (engineOn) {
-                controls.text = `Controls \n Up: Accelerate \n Down: Reverse \n Left And Right: Steer \n Enter: Turn Engine ${engineOn} \n Click: Honk Horn \n (Currently: Not Implemented) \n / to hide controls`;
+                controls.text = `Controls \n Up: Accelerate \n Down: Reverse \n Left And Right: Steer \n Enter: Turn Engine ${engineOn} \n Click: Honk Horn \n / to hide controls`;
             } else {
-                controls.text = `Controls \n Up: Accelerate \n Down: Reverse \n Left And Right: Steer \n Enter: Turn Engine ${engineOn} \n Click: Honk Horn \n (Currently: Not Implemented) \n / to hide controls`;
+                controls.text = `Controls \n Up: Accelerate \n Down: Reverse \n Left And Right: Steer \n Enter: Turn Engine ${engineOn} \n Click: Honk Horn \n / to hide controls`;
             }
         }),
     ]);
@@ -115,6 +122,11 @@ scene("game", () => {
             dead: false,
             speed: 0,
         },
+        onUpdate(() => {
+            // if (engineOn) {
+            //     play("LamboRun");
+            // }
+        }),
     ]);
 
     const speedometer = add([
@@ -162,7 +174,7 @@ scene("game", () => {
         if (engineOn) {
             engineOn = false;
         } else {
-            play("lambostart");
+            play("LamboStart");
             setTimeout(() => {
                 engineOn = true;
             }, 2000);
