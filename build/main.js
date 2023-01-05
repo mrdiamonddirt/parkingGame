@@ -2698,18 +2698,25 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprite("wheel", "sprites/wheel.png");
   loadSprite("wall", "sprites/wall.png");
   loadSprite("objective", "sprites/objective.png");
-  loadSound("lambostart", "./sounds/lambostart.ogg");
+  loadSound("LamboStart", "./sounds/LamboSVStart.ogg");
   loadSound("car-horn", "./sounds/car-horn.wav");
+  loadSound("LamboRun", "./sounds/RunLoopLambo.wav");
   var bgImage = loadSprite("bg", "sprites/bg.png");
   var wheelRotation = 0;
   var engineOn = false;
   var currentCarRotation = 90;
   var controlsShowing = true;
   var engineStartShowing = false;
+  var ParkingSpot = {
+    spot1: {
+      x: 1180,
+      y: 810
+    }
+  };
   scene("game", () => {
     layers(["bg", "obj", "ui"], "obj");
     const objective = add([
-      pos(1180, 810),
+      pos(ParkingSpot.spot1.x, ParkingSpot.spot1.y),
       rotate(13),
       scale(0.4),
       sprite("objective"),
@@ -2730,7 +2737,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
  Left And Right: Steer 
  Enter: Turn Engine ${engineOn} 
  Click: Honk Horn 
- (Currently: Not Implemented) 
  / to hide controls`,
         {
           size: 22,
@@ -2746,7 +2752,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
  Left And Right: Steer 
  Enter: Turn Engine ${engineOn} 
  Click: Honk Horn 
- (Currently: Not Implemented) 
  / to hide controls`;
         } else {
           controls.text = `Controls 
@@ -2755,7 +2760,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
  Left And Right: Steer 
  Enter: Turn Engine ${engineOn} 
  Click: Honk Horn 
- (Currently: Not Implemented) 
  / to hide controls`;
         }
       })
@@ -2811,7 +2815,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       {
         dead: false,
         speed: 0
-      }
+      },
+      onUpdate(() => {
+      })
     ]);
     const speedometer = add([
       pos(800, 80),
@@ -2851,7 +2857,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       if (engineOn) {
         engineOn = false;
       } else {
-        play("lambostart");
+        play("LamboStart");
         setTimeout(() => {
           engineOn = true;
         }, 2e3);
