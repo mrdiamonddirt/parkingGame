@@ -2711,10 +2711,15 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     spot1: {
       x: 1180,
       y: 810
+    },
+    spot2: {
+      x: 1180,
+      y: 610
     }
   };
   scene("game", () => {
     layers(["bg", "obj", "ui"], "obj");
+    const level = 1;
     const objective = add([
       pos(ParkingSpot.spot1.x, ParkingSpot.spot1.y),
       rotate(13),
@@ -2764,6 +2769,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         }
       })
     ]);
+    function getObjective() {
+      console.log("win");
+      objective.pos.x = ParkingSpot.spot2.x;
+      objective.pos.y = ParkingSpot.spot2.y;
+    }
     function toggleControls() {
       if (controlsShowing) {
         controlsShowing = false;
@@ -2929,6 +2939,15 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       const backward = car.isReverse();
       if (!forward && !backward) {
         return;
+      }
+      const distanceX = Math.abs(objective.pos.x + 80 - car.pos.x);
+      const distanceY = Math.abs(objective.pos.y + 80 - car.pos.y);
+      const objectRotation = Math.abs(objective.angle - car.angle);
+      console.log("distance", distanceX, distanceY, objectRotation);
+      if (distanceX < 10 && distanceY < 10 && objectRotation < 2 || distanceX < 10 && distanceY < 10 && objectRotation > 178) {
+        console.log("objective reached");
+        play("car-horn");
+        getObjective();
       }
       const direction = forward ? 1 : -1;
       const wheelDirection = wheel.rotate;
