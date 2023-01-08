@@ -30,10 +30,15 @@ let ParkingSpot = {
         x: 1180,
         y: 810,
     },
+    spot2: {
+        x: 1180,
+        y: 610,
+    },
 };
 
 scene("game", () => {
     layers(["bg", "obj", "ui"], "obj");
+    const level = 1;
 
     const objective = add([
         pos(ParkingSpot.spot1.x, ParkingSpot.spot1.y),
@@ -67,6 +72,12 @@ scene("game", () => {
             }
         }),
     ]);
+
+    function getObjective() {
+        console.log("win");
+        objective.pos.x = ParkingSpot.spot2.x;
+        objective.pos.y = ParkingSpot.spot2.y;
+    }
 
     function toggleControls() {
         if (controlsShowing) {
@@ -196,6 +207,7 @@ scene("game", () => {
             isReverse() {
                 // todo
                 // swap steering direction to be mirrored/
+
                 return keyIsDown("down");
             },
             isMoving() {
@@ -278,6 +290,25 @@ scene("game", () => {
             return;
         }
 
+        // get distance to the objective
+        const distanceX = Math.abs(objective.pos.x + 80 - car.pos.x); // + 80
+        const distanceY = Math.abs(objective.pos.y + 80 - car.pos.y); // + 80
+        // and or 180 degrees of the objective angle
+        const objectRotation = Math.abs(objective.angle - car.angle); // also check if the car is facing the opposite direction
+
+        console.log("distance", distanceX, distanceY, objectRotation);
+        // check if the car is close enough to the objective
+        if (
+            (distanceX < 10 && distanceY < 10 && objectRotation < 2) ||
+            (distanceX < 10 && distanceY < 10 && objectRotation > 178)
+        ) {
+            console.log("objective reached");
+            play("car-horn");
+            // todo objective reached
+            // todo show next objective
+            getObjective();
+        }
+
         const direction = forward ? 1 : -1;
 
         // get wheel direction
@@ -298,6 +329,7 @@ scene("game", () => {
         }
         if (car.isReverse()) {
             // todo reverse
+            // mirror the wheel rotation
         }
         // console.log("car angle", car.angle);
         // console.log("wheel angle", wheel.angle);
