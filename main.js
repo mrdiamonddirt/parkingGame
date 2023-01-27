@@ -2698,18 +2698,30 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprite("wheel", "sprites/wheel.png");
   loadSprite("wall", "sprites/wall.png");
   loadSprite("objective", "sprites/objective.png");
-  loadSound("lambostart", "./sounds/lambostart.ogg");
+  loadSound("LamboStart", "./sounds/LamboSVStart.ogg");
   loadSound("car-horn", "./sounds/car-horn.wav");
+  loadSound("LamboRun", "./sounds/RunLoopLambo.wav");
   var bgImage = loadSprite("bg", "sprites/bg.png");
   var wheelRotation = 0;
   var engineOn = false;
   var currentCarRotation = 90;
   var controlsShowing = true;
   var engineStartShowing = false;
+  var ParkingSpot = {
+    spot1: {
+      x: 1180,
+      y: 810
+    },
+    spot2: {
+      x: 1180,
+      y: 610
+    }
+  };
   scene("game", () => {
     layers(["bg", "obj", "ui"], "obj");
+    const level = 1;
     const objective = add([
-      pos(1180, 810),
+      pos(ParkingSpot.spot1.x, ParkingSpot.spot1.y),
       rotate(13),
       scale(0.4),
       sprite("objective"),
@@ -2730,7 +2742,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
  Left And Right: Steer 
  Enter: Turn Engine ${engineOn} 
  Click: Honk Horn 
- (Currently: Not Implemented) 
  / to hide controls`,
         {
           size: 22,
@@ -2746,7 +2757,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
  Left And Right: Steer 
  Enter: Turn Engine ${engineOn} 
  Click: Honk Horn 
- (Currently: Not Implemented) 
  / to hide controls`;
         } else {
           controls.text = `Controls 
@@ -2755,11 +2765,15 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
  Left And Right: Steer 
  Enter: Turn Engine ${engineOn} 
  Click: Honk Horn 
- (Currently: Not Implemented) 
  / to hide controls`;
         }
       })
     ]);
+    function getObjective() {
+      console.log("win");
+      objective.pos.x = ParkingSpot.spot2.x;
+      objective.pos.y = ParkingSpot.spot2.y;
+    }
     function toggleControls() {
       if (controlsShowing) {
         controlsShowing = false;
@@ -2811,7 +2825,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       {
         dead: false,
         speed: 0
-      }
+      },
+      onUpdate(() => {
+      })
     ]);
     const speedometer = add([
       pos(800, 80),
@@ -2851,7 +2867,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       if (engineOn) {
         engineOn = false;
       } else {
-        play("lambostart");
+        play("LamboStart");
         setTimeout(() => {
           engineOn = true;
         }, 2e3);
@@ -2923,6 +2939,15 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       const backward = car.isReverse();
       if (!forward && !backward) {
         return;
+      }
+      const distanceX = Math.abs(objective.pos.x + 80 - car.pos.x);
+      const distanceY = Math.abs(objective.pos.y + 80 - car.pos.y);
+      const objectRotation = Math.abs(objective.angle - car.angle);
+      console.log("distance", distanceX, distanceY, objectRotation);
+      if (distanceX < 10 && distanceY < 10 && objectRotation < 2 || distanceX < 10 && distanceY < 10 && objectRotation > 178) {
+        console.log("objective reached");
+        play("car-horn");
+        getObjective();
       }
       const direction = forward ? 1 : -1;
       const wheelDirection = wheel.rotate;
