@@ -296,7 +296,7 @@ scene("game", () => {
         // and or 180 degrees of the objective angle
         const objectRotation = Math.abs(objective.angle - car.angle); // also check if the car is facing the opposite direction
 
-        console.log("distance", distanceX, distanceY, objectRotation);
+        // console.log("distance", distanceX, distanceY, objectRotation);
         // check if the car is close enough to the objective
         if (
             (distanceX < 10 && distanceY < 10 && objectRotation < 2) ||
@@ -312,7 +312,7 @@ scene("game", () => {
         const direction = forward ? 1 : -1;
 
         // get wheel direction
-        const wheelDirection = wheel.rotate;
+        // const wheelDirection = wheel.rotate;
 
         // calculate the angle between the car and the wheel
         const vec = angleToVec2(car.angle);
@@ -323,9 +323,11 @@ scene("game", () => {
         }
         if (Math.abs(wheelRotation) > 2) {
             // Turn the car based on the wheel's rotation if it is more than 2 degrees
-            car.angle += wheelRotation * 0.007;
+            const turnDirection = car.isReverse() ? -1 : 1;
+            car.angle += wheelRotation * 0.007 * turnDirection;
         } else if (Math.abs(wheelRotation) < 2) {
-            car.angle -= wheelRotation * 0.007;
+            const turnDirection = car.isReverse() ? 1 : -1;
+            car.angle -= wheelRotation * 0.007 * turnDirection;
         }
         if (car.isReverse()) {
             // todo reverse
