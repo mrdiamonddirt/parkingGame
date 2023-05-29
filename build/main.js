@@ -2943,23 +2943,23 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       const distanceX = Math.abs(objective.pos.x + 80 - car.pos.x);
       const distanceY = Math.abs(objective.pos.y + 80 - car.pos.y);
       const objectRotation = Math.abs(objective.angle - car.angle);
-      console.log("distance", distanceX, distanceY, objectRotation);
       if (distanceX < 10 && distanceY < 10 && objectRotation < 2 || distanceX < 10 && distanceY < 10 && objectRotation > 178) {
         console.log("objective reached");
         play("car-horn");
         getObjective();
       }
       const direction = forward ? 1 : -1;
-      const wheelDirection = wheel.rotate;
       const vec = angleToVec2(car.angle);
       if (engineOn && car.isMoving) {
         car.pos.x += vec.x * car.speed * direction;
         car.pos.y += vec.y * car.speed * direction;
       }
       if (Math.abs(wheelRotation) > 2) {
-        car.angle += wheelRotation * 7e-3;
+        const turnDirection = car.isReverse() ? -1 : 1;
+        car.angle += wheelRotation * 7e-3 * turnDirection;
       } else if (Math.abs(wheelRotation) < 2) {
-        car.angle -= wheelRotation * 7e-3;
+        const turnDirection = car.isReverse() ? 1 : -1;
+        car.angle -= wheelRotation * 7e-3 * turnDirection;
       }
       if (car.isReverse()) {
       }
