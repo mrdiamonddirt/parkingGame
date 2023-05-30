@@ -29,9 +29,11 @@ If you like the game, please consider supporting me on
 ## planned features
 
 -   [ ] Speedometer
--   [ ] mirror the direction of the steering when reversing
 -   [ ] Engine sound when moving the car
 -   [ ] Car lights
+-   [ ] Add more objectives
+-   [ ] Timer
+-   [ ] Highscore based on time
 
 ## How to run
 
