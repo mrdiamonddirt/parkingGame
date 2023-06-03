@@ -32,13 +32,13 @@ let startTime = Date.now();
 let time = 0;
 
 let ParkingSpot = {
-    spot1: {
+    spot2: {
         x: 1180,
         y: 810,
     },
-    spot2: {
-        x: 1180,
-        y: 610,
+    spot1: {
+        x: 1140,
+        y: 550,
     },
 };
 
@@ -167,6 +167,7 @@ scene("game", () => {
             // if (engineOn) {
             //     play("LamboRun");
             // }
+            console.log(car.pos.x, car.pos.y)
         }),
     ]);
 
@@ -254,7 +255,6 @@ scene("game", () => {
         if (!engineOn) {
             ShowEngineStart();
             console.log("engine not on");
-
             return;
         } else {
             const maxSpeed = 10;
@@ -263,6 +263,9 @@ scene("game", () => {
     });
 
     onKeyDown("down", () => {
+        if (!engineOn) {
+            return;
+        }
         console.log("down");
         // stop the car
         // if (car.speed > 0) {
