@@ -18,6 +18,7 @@ loadSound("LamboStart", "./sounds/LamboSVStart.ogg");
 loadSound("car-horn", "./sounds/car-horn.wav");
 loadSound("LamboRun", "./sounds/RunLoopLambo.wav");
 
+// variables
 let bgImage = loadSprite("bg", "sprites/bg.png");
 
 let wheelRotation = 0;
@@ -25,6 +26,11 @@ let engineOn = false;
 let currentCarRotation = 90;
 let controlsShowing = true;
 let engineStartShowing = false;
+// get the time the game started
+let startTime = Date.now();
+// store the time the game started
+let time = 0;
+
 let ParkingSpot = {
     spot1: {
         x: 1180,
@@ -36,9 +42,33 @@ let ParkingSpot = {
     },
 };
 
+// main scene
 scene("game", () => {
+    // add layers
     layers(["bg", "obj", "ui"], "obj");
-    const level = 1;
+
+    let level = 1;
+
+    const timer = add([
+        pos(800,40),
+        layer("ui"),
+        fixed(),
+        origin("center"),
+        rect(100, 400),
+        color(60, 235, 60),
+        text(time, {
+            size: 32,
+            color: rgb(0, 0, 0),
+        }),
+        z(4),
+        onUpdate(() => {
+            // update the timer every frame
+            time = Date.now() - startTime;
+            // add a decimal point to the time for seconds and milliseconds
+            time = (time / 1000).toFixed(2);
+            timer.text = time;
+        }),
+    ]);
 
     const objective = add([
         pos(ParkingSpot.spot1.x, ParkingSpot.spot1.y),
@@ -120,7 +150,7 @@ scene("game", () => {
             maxVel: 0,
         }),
         solid(),
-        scale(0.1),
+        scale(0.15),
         rotate(currentCarRotation),
         origin("center"),
         sprite("car"),
@@ -140,19 +170,19 @@ scene("game", () => {
         }),
     ]);
 
-    const speedometer = add([
-        pos(800, 80),
-        layer("ui"),
-        fixed(),
-        origin("center"),
-        text(car.speed + " mph", {
-            size: 32,
-            color: rgb(255, 255, 255),
-        }),
-        onUpdate(() => {
-            speedometer.text = car.speed + " mph";
-        }),
-    ]);
+    // const speedometer = add([
+    //     pos(800, 80),
+    //     layer("ui"),
+    //     fixed(),
+    //     origin("center"),
+    //     text(car.speed + " mph", {
+    //         size: 32,
+    //         color: rgb(255, 255, 255),
+    //     }),
+    //     onUpdate(() => {
+    //         speedometer.text = car.speed + " mph";
+    //     }),
+    // ]);
 
     const startEngine = add([
         pos(car.pos.x - 400, car.pos.y - 200),
