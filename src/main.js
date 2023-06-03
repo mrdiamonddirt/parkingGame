@@ -30,15 +30,23 @@ let engineStartShowing = false;
 let startTime = Date.now();
 // store the time the game started
 let time = 0;
+var splits = [];
 
 let ParkingSpot = {
-    spot2: {
+    spot1: {
         x: 1180,
         y: 810,
+        angle: 13,
     },
-    spot1: {
+    spot2: {
         x: 1140,
         y: 550,
+        angle: 13,
+    },
+    spot3: {
+        x: 550,
+        y: 350,
+        angle: 190,
     },
 };
 
@@ -70,9 +78,23 @@ scene("game", () => {
         }),
     ]);
 
+    const splitTimer = add([
+        pos(800, 80),
+        layer("ui"),
+        fixed(),
+        origin("center"),
+        rect(100, 400),
+        color(60, 235, 60),
+        text(splits, {
+            size: 32,
+            color: rgb(0, 0, 0),
+        }),
+        z(4),
+    ]);
+
     const objective = add([
         pos(ParkingSpot.spot1.x, ParkingSpot.spot1.y),
-        rotate(13),
+        rotate(ParkingSpot.spot1.angle),
         scale(0.4),
         sprite("objective"),
         area(),
@@ -104,11 +126,26 @@ scene("game", () => {
     ]);
 
     function getObjective() {
-        console.log("win");
-        objective.pos.x = ParkingSpot.spot2.x;
-        objective.pos.y = ParkingSpot.spot2.y;
-    }
+        console.log("reached objective");
+        if (level == 1) {
+            level = 2;
+            // add time for the split
+            splits.push(time);
+            objective.pos.x = ParkingSpot.spot2.x;
+            objective.pos.y = ParkingSpot.spot2.y;
+            objective.rotate = ParkingSpot.spot2.angle;
+            return;
+        }
+        if (level == 2) {
+            level = 3;
+            splits.push(time);
+            objective.pos.x = ParkingSpot.spot3.x;
+            objective.pos.y = ParkingSpot.spot3.y;
+            objective.rotate = ParkingSpot.spot3.angle;
+            return;
+        }
 
+    }
     function toggleControls() {
         if (controlsShowing) {
             controlsShowing = false;
@@ -167,7 +204,7 @@ scene("game", () => {
             // if (engineOn) {
             //     play("LamboRun");
             // }
-            console.log(car.pos.x, car.pos.y)
+            // console.log(car.pos.x, car.pos.y)
         }),
     ]);
 
