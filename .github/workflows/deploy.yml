@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@master
         with:
           node-version: '18.9.1'  # Adjust to your desired Node.js version
 
