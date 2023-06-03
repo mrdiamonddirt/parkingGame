@@ -269,13 +269,17 @@ scene("game", () => {
     function carControls() {
         return {
             isDrive() {
-                // todo
+                if (!engineOn) {
+                    return;
+                }
                 return keyIsDown("up");
             },
             isReverse() {
                 // todo
                 // swap steering direction to be mirrored/
-
+                if (!engineOn) {
+                    return;
+                }
                 return keyIsDown("down");
             },
             isMoving() {
@@ -315,6 +319,7 @@ scene("game", () => {
         if (!engineOn) {
             return;
         }
+        if (engineOn) {
         if (wheelRotation >= -540) {
             console.log("left");
             wheelRotation -= 5;
@@ -324,12 +329,14 @@ scene("game", () => {
         // if (car.isMoving() && car.speed > 0) {
         //     car.angle -= 1;
         // }
+        }
     });
 
     onKeyDown("right", () => {
         if (!engineOn) {
             return;
         }
+        if (engineOn) {
         if (wheelRotation <= 540) {
             console.log("right");
             wheelRotation += 5;
@@ -339,6 +346,7 @@ scene("game", () => {
         // if (car.isMoving() && car.speed > 0) {
         //     car.angle += 1;
         // }
+        }
     });
 
     function angleToVec2(angle) {
@@ -361,10 +369,10 @@ scene("game", () => {
         }
 
         // get distance to the objective
-        const distanceX = Math.abs(objective.pos.x + 80 - car.pos.x); // + 80
-        const distanceY = Math.abs(objective.pos.y + 80 - car.pos.y); // + 80
+        let distanceX = Math.abs(objective.pos.x + 80 - car.pos.x); // + 80
+        let distanceY = Math.abs(objective.pos.y + 80 - car.pos.y); // + 80
         // and or 180 degrees of the objective angle
-        const objectRotation = Math.abs(objective.angle - car.angle); // also check if the car is facing the opposite direction
+        let objectRotation = Math.abs(objective.angle - car.angle); // also check if the car is facing the opposite direction
 
         // console.log("distance", distanceX, distanceY, objectRotation);
         // check if the car is close enough to the objective
