@@ -2,7 +2,7 @@
     "name": "parkingGame",
     "homepage": "https://mrdiamonddirt.github.io/parkingGame/",
     "scripts": {
-        "build": "esbuild --bundle src/main.js --outfile=www/main.js",
+        "build": "esbuild --bundle src/main.js --outfile=build/main.js",
         "dev": "esbuild --bundle src/main.js --outfile=www/main.js --servedir=www",
         "zip": "npm run build && mkdir -p dist && zip -r dist/game.zip www -x \"**/.DS_Store\"",
         "predeploy": "npm run build",
