@@ -44,9 +44,19 @@ let ParkingSpot = {
         angle: 13,
     },
     spot3: {
-        x: 550,
-        y: 350,
-        angle: 190,
+        x: 760,
+        y: 440,
+        angle: 152,
+    },
+    spot4: {
+        x: 1250,
+        y: 1214,
+        angle: 13,
+    },
+    spot5: {
+        x: 2900,
+        y: 728,
+        angle: 192,
     },
 };
 
@@ -72,8 +82,14 @@ scene("game", () => {
         onUpdate(() => {
             // update the timer every frame
             time = Date.now() - startTime;
-            // add a decimal point to the time for seconds and milliseconds
+            // add a decimal point to the time for seconds and milliseconds and format minutes
             time = (time / 1000).toFixed(2);
+            // format the time to minutes and seconds
+            if (time >= 60) {
+            minutes = Math.floor(time / 60);
+            seconds = time - minutes * 60;
+            time = minutes + ":" + seconds.toFixed(2);
+            }
             timer.text = time;
         }),
     ]);
@@ -126,26 +142,18 @@ scene("game", () => {
     ]);
 
     function getObjective() {
-        console.log("reached objective");
-        if (level == 1) {
-            level = 2;
-            // add time for the split
-            splits.push(time);
-            objective.pos.x = ParkingSpot.spot2.x;
-            objective.pos.y = ParkingSpot.spot2.y;
-            objective.rotate = ParkingSpot.spot2.angle;
-            return;
-        }
-        if (level == 2) {
-            level = 3;
-            splits.push(time);
-            objective.pos.x = ParkingSpot.spot3.x;
-            objective.pos.y = ParkingSpot.spot3.y;
-            objective.rotate = ParkingSpot.spot3.angle;
-            return;
-        }
+        // console.log("reached objective");
+        const levels = [null, ParkingSpot.spot1, ParkingSpot.spot2, ParkingSpot.spot3, ParkingSpot.spot4, ParkingSpot.spot5];
 
+        if (level >= 1 && level <= 4) {
+            level++;
+            splits.push(time);
+            objective.pos.x = levels[level].x;
+            objective.pos.y = levels[level].y;
+            objective.angle = levels[level].angle;
+        }
     }
+
     function toggleControls() {
         if (controlsShowing) {
             controlsShowing = false;
@@ -272,7 +280,7 @@ scene("game", () => {
                 if (!engineOn) {
                     return;
                 }
-                return keyIsDown("up");
+                return isKeyDown("up");
             },
             isReverse() {
                 // todo
@@ -280,7 +288,7 @@ scene("game", () => {
                 if (!engineOn) {
                     return;
                 }
-                return keyIsDown("down");
+                return isKeyDown("down");
             },
             isMoving() {
                 // todo
@@ -295,7 +303,7 @@ scene("game", () => {
         // accelerate the car
         if (!engineOn) {
             ShowEngineStart();
-            console.log("engine not on");
+            // console.log("engine not on");
             return;
         } else {
             const maxSpeed = 10;
@@ -307,7 +315,7 @@ scene("game", () => {
         if (!engineOn) {
             return;
         }
-        console.log("down");
+        // console.log("down");
         // stop the car
         // if (car.speed > 0) {
         //     car.speed -= 1;
@@ -321,10 +329,10 @@ scene("game", () => {
         }
         if (engineOn) {
         if (wheelRotation >= -540) {
-            console.log("left");
+            // console.log("left");
             wheelRotation -= 5;
         }
-        console.log(wheelRotation);
+        // console.log(wheelRotation);
         wheel.angle = wheelRotation;
         // if (car.isMoving() && car.speed > 0) {
         //     car.angle -= 1;
@@ -338,10 +346,10 @@ scene("game", () => {
         }
         if (engineOn) {
         if (wheelRotation <= 540) {
-            console.log("right");
+            // console.log("right");
             wheelRotation += 5;
         }
-        console.log(wheelRotation);
+        // console.log(wheelRotation);
         wheel.angle = wheelRotation;
         // if (car.isMoving() && car.speed > 0) {
         //     car.angle += 1;
