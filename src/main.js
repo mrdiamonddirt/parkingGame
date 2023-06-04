@@ -34,28 +34,28 @@ var splits = [];
 
 let ParkingSpot = {
     spot1: {
-        x: 1180,
-        y: 810,
+        x: 1260,
+        y: 880,
         angle: 13,
     },
     spot2: {
-        x: 1140,
-        y: 550,
+        x: 1220,
+        y: 620,
         angle: 13,
     },
     spot3: {
-        x: 760,
-        y: 440,
+        x: 680,
+        y: 540,
         angle: 152,
     },
     spot4: {
-        x: 1250,
-        y: 1214,
+        x: 1270,
+        y: 1320,
         angle: 13,
     },
     spot5: {
-        x: 2900,
-        y: 728,
+        x: 2800,
+        y: 778,
         angle: 192,
     },
 };
@@ -112,6 +112,7 @@ scene("game", () => {
         pos(ParkingSpot.spot1.x, ParkingSpot.spot1.y),
         rotate(ParkingSpot.spot1.angle),
         scale(0.4),
+        origin("center"),
         sprite("objective"),
         area(),
         layer("obj"),
@@ -151,7 +152,25 @@ scene("game", () => {
             objective.pos.x = levels[level].x;
             objective.pos.y = levels[level].y;
             objective.angle = levels[level].angle;
+            console.log("level", level);
         }
+        if (level == 5) {
+            console.log("Level", level, "complete");
+            console.log("game over");
+            console.log("splits", splits);
+            // get the highscore from local storage
+            let highscore = localStorage.getItem("highscore");
+            // if there isn't a highscore, set it to 0
+            if (highscore == null) {
+                highscore = 0;
+            }
+            // if the current time is less than the highscore, set the highscore to the current time
+            if (time < highscore || highscore == 0) {
+                localStorage.setItem("highscore", time);
+            }
+            // go("gameover");
+        }
+
     }
 
     function toggleControls() {
@@ -377,12 +396,12 @@ scene("game", () => {
         }
 
         // get distance to the objective
-        let distanceX = Math.abs(objective.pos.x + 80 - car.pos.x); // + 80
-        let distanceY = Math.abs(objective.pos.y + 80 - car.pos.y); // + 80
+        let distanceX = Math.abs(objective.pos.x - car.pos.x); // + 80
+        let distanceY = Math.abs(objective.pos.y - car.pos.y); // + 80
         // and or 180 degrees of the objective angle
         let objectRotation = Math.abs(objective.angle - car.angle); // also check if the car is facing the opposite direction
 
-        // console.log("distance", distanceX, distanceY, objectRotation);
+        console.log("distance", distanceX, distanceY, objectRotation);
         // check if the car is close enough to the objective
         if (
             (distanceX < 10 && distanceY < 10 && objectRotation < 2) ||
