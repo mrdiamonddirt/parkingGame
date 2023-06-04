@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master  # Adjust to your main branch name
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,7 +15,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18.9.1'  # Adjust to your desired Node.js version
+          node-version: '16.x'  # Adjust to your desired Node.js version
 
       - name: Install dependencies
         run: npm install  # Or use yarn install if you prefer Yarn
@@ -26,10 +25,9 @@ jobs:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           # Add more Firebase environment variables as needed
-        run: |
-          npm run build  # Or use the build command appropriate for your project
+        run: npm run build
+          # Or use the build command appropriate for your project
           # Additional build commands or scripts
 
           # Deploy to Firebase using environment variables
           # Replace the following command with your own deployment script
-          npm run deploy  # Or the command to deploy to Firebase Hosting
