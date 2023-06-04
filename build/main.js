@@ -2712,19 +2712,29 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var splits = [];
   var ParkingSpot = {
     spot1: {
-      x: 1180,
-      y: 810,
+      x: 1260,
+      y: 880,
       angle: 13
     },
     spot2: {
-      x: 1140,
-      y: 550,
+      x: 1220,
+      y: 620,
       angle: 13
     },
     spot3: {
-      x: 550,
-      y: 350,
-      angle: 190
+      x: 680,
+      y: 540,
+      angle: 152
+    },
+    spot4: {
+      x: 1270,
+      y: 1320,
+      angle: 13
+    },
+    spot5: {
+      x: 2800,
+      y: 778,
+      angle: 192
     }
   };
   scene("game", () => {
@@ -2745,6 +2755,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       onUpdate(() => {
         time = Date.now() - startTime;
         time = (time / 1e3).toFixed(2);
+        if (time >= 60) {
+          minutes = Math.floor(time / 60);
+          seconds = time - minutes * 60;
+          time = minutes + ":" + seconds.toFixed(2);
+        }
         timer.text = time;
       })
     ]);
@@ -2765,6 +2780,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       pos(ParkingSpot.spot1.x, ParkingSpot.spot1.y),
       rotate(ParkingSpot.spot1.angle),
       scale(0.4),
+      origin("center"),
       sprite("objective"),
       area(),
       layer("obj"),
@@ -2811,22 +2827,26 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       })
     ]);
     function getObjective() {
-      console.log("reached objective");
-      if (level == 1) {
-        level = 2;
+      const levels = [null, ParkingSpot.spot1, ParkingSpot.spot2, ParkingSpot.spot3, ParkingSpot.spot4, ParkingSpot.spot5];
+      if (level >= 1 && level <= 4) {
+        level++;
         splits.push(time);
-        objective.pos.x = ParkingSpot.spot2.x;
-        objective.pos.y = ParkingSpot.spot2.y;
-        objective.rotate = ParkingSpot.spot2.angle;
-        return;
+        objective.pos.x = levels[level].x;
+        objective.pos.y = levels[level].y;
+        objective.angle = levels[level].angle;
+        console.log("level", level);
       }
-      if (level == 2) {
-        level = 3;
-        splits.push(time);
-        objective.pos.x = ParkingSpot.spot3.x;
-        objective.pos.y = ParkingSpot.spot3.y;
-        objective.rotate = ParkingSpot.spot3.angle;
-        return;
+      if (level == 5) {
+        console.log("Level", level, "complete");
+        console.log("game over");
+        console.log("splits", splits);
+        let highscore = localStorage.getItem("highscore");
+        if (highscore == null) {
+          highscore = 0;
+        }
+        if (time < highscore || highscore == 0) {
+          localStorage.setItem("highscore", time);
+        }
       }
     }
     function toggleControls() {
@@ -2926,13 +2946,13 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
           if (!engineOn) {
             return;
           }
-          return keyIsDown("up");
+          return isKeyDown("up");
         },
         isReverse() {
           if (!engineOn) {
             return;
           }
-          return keyIsDown("down");
+          return isKeyDown("down");
         },
         isMoving() {
           return this.isDrive() || this.isReverse();
@@ -2942,7 +2962,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     onKeyDown("up", () => {
       if (!engineOn) {
         ShowEngineStart();
-        console.log("engine not on");
         return;
       } else {
         const maxSpeed = 10;
@@ -2953,7 +2972,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       if (!engineOn) {
         return;
       }
-      console.log("down");
     });
     onKeyDown("left", () => {
       if (!engineOn) {
@@ -2961,10 +2979,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
       if (engineOn) {
         if (wheelRotation >= -540) {
-          console.log("left");
           wheelRotation -= 5;
         }
-        console.log(wheelRotation);
         wheel.angle = wheelRotation;
       }
     });
@@ -2974,10 +2990,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
       if (engineOn) {
         if (wheelRotation <= 540) {
-          console.log("right");
           wheelRotation += 5;
         }
-        console.log(wheelRotation);
         wheel.angle = wheelRotation;
       }
     });
@@ -2995,9 +3009,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       if (!forward && !backward) {
         return;
       }
-      let distanceX = Math.abs(objective.pos.x + 80 - car.pos.x);
-      let distanceY = Math.abs(objective.pos.y + 80 - car.pos.y);
+      let distanceX = Math.abs(objective.pos.x - car.pos.x);
+      let distanceY = Math.abs(objective.pos.y - car.pos.y);
       let objectRotation = Math.abs(objective.angle - car.angle);
+      console.log("distance", distanceX, distanceY, objectRotation);
       if (distanceX < 10 && distanceY < 10 && objectRotation < 2 || distanceX < 10 && distanceY < 10 && objectRotation > 178) {
         console.log("objective reached");
         play("car-horn");
