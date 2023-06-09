@@ -44,16 +44,21 @@ let ParkingSpot = {
         angle: 13,
     },
     spot3: {
-        x: 680,
-        y: 540,
+        x: 660,
+        y: 570,
         angle: 152,
     },
     spot4: {
-        x: 1270,
-        y: 1320,
+        x: 1340,
+        y: 1420,
         angle: 13,
     },
     spot5: {
+        x: 2800,
+        y: 778,
+        angle: 192,
+    },
+    spot6: {
         x: 2800,
         y: 778,
         angle: 192,
@@ -95,15 +100,17 @@ scene("game", () => {
     ]);
 
     const splitTimer = add([
-        pos(800, 80),
+        pos(1000, 80),
         layer("ui"),
         fixed(),
         origin("center"),
-        rect(100, 400),
+        rect(200, 400),
         color(60, 235, 60),
         text(splits, {
             size: 32,
             color: rgb(0, 0, 0),
+            textAlign: "center",
+            // remove comas from the array with regex    
         }),
         z(4),
     ]);
@@ -144,31 +151,49 @@ scene("game", () => {
 
     function getObjective() {
         // console.log("reached objective");
-        const levels = [null, ParkingSpot.spot1, ParkingSpot.spot2, ParkingSpot.spot3, ParkingSpot.spot4, ParkingSpot.spot5];
+        const levels = [null, ParkingSpot.spot1, ParkingSpot.spot2, ParkingSpot.spot3, ParkingSpot.spot4, ParkingSpot.spot5, ParkingSpot.spot6];
 
-        if (level >= 1 && level <= 4) {
+        if (level >= 1 && level <= 5) {
             level++;
             splits.push(time);
+            if (level > 5) {
+                console.log("Level", level, "complete");
+                console.log("game over");
+                console.log("splits", splits);
+                let finishtime = time;
+                // get the highscore from local storage
+                let highscore = localStorage.getItem("highscore");
+                // if there isn't a highscore, set it to 0
+                if (highscore == null) {
+                    highscore = 0;
+                }
+                // if the current time is less than the highscore, set the highscore to the current time
+                if (finishtime < highscore || highscore == 0) {
+                    localStorage.setItem("highscore", finishtime);
+                    // new highscore set
+                    console.log("new highscore set");
+                }
+                const highscoreBoard = add([
+                    pos(600, 400),
+                    layer("ui"),
+                    fixed(),
+                    origin("center"),
+                    rect(400, 400),
+                    color(255, 255, 255),
+                    text(`Congratulations You have Finished The Game! \n Your time was ${finishtime} \n
+                    Your best time: ` + localStorage.getItem("highscore") + `\n Refresh the Page to try again`, {
+                        size: 32,
+                        color: rgb(0, 0, 0),
+                        textAlign: "center",
+                    }),
+                    z(4),
+                ]);
+                // go("gameover");
+            }
             objective.pos.x = levels[level].x;
             objective.pos.y = levels[level].y;
             objective.angle = levels[level].angle;
             console.log("level", level);
-        }
-        if (level == 5) {
-            console.log("Level", level, "complete");
-            console.log("game over");
-            console.log("splits", splits);
-            // get the highscore from local storage
-            let highscore = localStorage.getItem("highscore");
-            // if there isn't a highscore, set it to 0
-            if (highscore == null) {
-                highscore = 0;
-            }
-            // if the current time is less than the highscore, set the highscore to the current time
-            if (time < highscore || highscore == 0) {
-                localStorage.setItem("highscore", time);
-            }
-            // go("gameover");
         }
 
     }
@@ -401,7 +426,7 @@ scene("game", () => {
         // and or 180 degrees of the objective angle
         let objectRotation = Math.abs(objective.angle - car.angle); // also check if the car is facing the opposite direction
 
-        console.log("distance", distanceX, distanceY, objectRotation);
+        // console.log("distance", distanceX, distanceY, objectRotation);
         // check if the car is close enough to the objective
         if (
             (distanceX < 10 && distanceY < 10 && objectRotation < 2) ||

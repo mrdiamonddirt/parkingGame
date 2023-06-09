@@ -9,6 +9,7 @@
         "deploy": "gh-pages -d build"
     },
     "dependencies": {
+        "firebase": "^9.22.1",
         "gh-pages": "^5.0.0",
         "kaboom": "^2000.2.10"
     },
